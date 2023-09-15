@@ -15,9 +15,9 @@ Thus, the last two components mentioned are primarily for experimentation and co
 
 ## Prerequisites
 
-- Java 11+
-   - See `build.gradle` for application-specific dependencies 
-- (broker only) `docker-compose`
+- Java Development Kit (JDK) 11+
+   - See [`build.gradle`](/build.gradle) for application-specific Java dependencies 
+- (broker only) [`docker-compose`](https://docs.docker.com/compose/)
 
 ## Run Instructions
 
