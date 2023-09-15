@@ -1,0 +1,48 @@
+provisions: {
+  @provision("consumer-properties") {
+    class: "nstream.adapter.common.provision.PropertiesProvision",
+    def: {
+      "bootstrap.servers": "localhost:29092",
+      "group.id": "bespoke-group",
+      "key.deserializer": "org.apache.kafka.common.serialization.IntegerDeserializer",
+      "value.deserializer": "org.apache.kafka.common.serialization.StringDeserializer"
+      "auto.offset.reset": "latest"
+    }
+  }
+}
+
+"starter": @fabric {
+  @plane(class: "nstream.adapter.runtime.AppPlane")
+  # ingestion
+  @node {
+    uri: "/kafka"
+    @agent(class: "nstream.adapter.kafka.KafkaIngestingPatch") {
+      kafkaIngressConf: @kafkaIngressSettings {
+        consumerPropertiesProvisionName: "consumer-properties"
+        topics: {"vehicles-integer-json"}
+        valueContentTypeOverride: "json"
+        relaySchema: @command {
+          nodeUri: {
+            "/vehicle/",
+            $key # $value$id will also work here
+          },
+          laneUri: "addMessage"
+          value: $value
+        }
+      }
+    }
+  }
+  # business logic
+  @node {
+    pattern: "/vehicle/:id"
+    @agent(class: "nstream.starter.VehicleAgent")
+  }
+}
+
+@web(port: 9001) {
+  space: "starter"
+  @websocket {
+    serverCompressionLevel: 0# -1 = default; 0 = off; 1-9 = deflate level
+    clientCompressionLevel: 0# -1 = default; 0 = off; 1-9 = deflate level
+  }
+}

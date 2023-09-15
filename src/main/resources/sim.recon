@@ -1,0 +1,33 @@
+provisions: {
+  @provision("vehicles-kafka-producer") {
+    class: "nstream.adapter.kafka.KafkaProducerProvision"
+    def: {
+      "key.serializer": "org.apache.kafka.common.serialization.IntegerSerializer"
+      "value.serializer": "org.apache.kafka.common.serialization.StringSerializer"
+      "bootstrap.servers": "localhost:29092"
+      "request.timeout.ms": 5000,
+      "max.block.ms": 5000
+    }
+  }
+}
+
+"sim": @fabric {
+  @plane(class: "nstream.adapter.runtime.AppPlane")
+  @node {
+    uri: "/kafka"
+    @agent(class: "nstream.adapter.kafka.KafkaIngestingPatch")
+  }
+  @node {
+    pattern: "/vehicle/:id"
+    @agent(class: "nstream.starter.sim.VehicleSimAgent")
+    @agent(class: "nstream.starter.sim.VehiclePublishingAgent")
+  }
+}
+
+@web(port: 9002) {
+  space: "sim"
+  @websocket {
+    serverCompressionLevel: 0
+    clientCompressionLevel: 0
+  }
+}
