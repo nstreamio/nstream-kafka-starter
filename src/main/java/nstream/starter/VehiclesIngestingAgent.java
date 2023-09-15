@@ -10,7 +10,7 @@ import swim.api.lane.CommandLane;
  * {@code server.recon}. "Low-code" variations first create a base class that
  * extends {@code KafkaIngestingPatch}, then utilize that class in {@code
  * server.recon}.
- * <p>This class is unused on a fresh clone of the repository. If you wish to
+ * <p>This class is unused in a fresh clone of the repository. If you wish to
  * modify and/or use any custom logic here, ensure server.recon points to this
  * class instead of {@code KafkaIngestingPatch}.
  */
