@@ -19,14 +19,14 @@ public final class VehiclesSimulation {
 
   public static void seed(Space space) {
     // routes
-    Utils.loadResourceLines("vehicles/routes.csv", s -> {
+    Utils.loadResourceLines("routes.csv", s -> {
       final String[] split = s.split(",");
       if (split.length > 1) {
         ROUTES.put(Integer.parseInt(split[0]), split[1]);
       }
     });
     // locations
-    Utils.loadResourceLines("vehicles/locations.csv", s -> {
+    Utils.loadResourceLines("locations.csv", s -> {
       final String[] split = s.split(",");
       if (split.length > 1) {
         final int vehicle = Integer.parseInt(split[0]);
