@@ -16,7 +16,8 @@ provisions: {
   # ingestion
   @node {
     uri: "/kafka"
-    @agent(class: "nstream.adapter.kafka.KafkaIngestingPatch") {
+    # @agent(class: "nstream.adapter.kafka.KafkaIngestingPatch") {
+    @agent(class: "nstream.starter.VehiclesIngestingAgent") {
       kafkaIngressConf: @kafkaIngressSettings {
         consumerPropertiesProvisionName: "consumer-properties"
         topics: {"vehicles-integer-json"}
@@ -36,6 +37,17 @@ provisions: {
   @node {
     pattern: "/vehicle/:id"
     @agent(class: "nstream.starter.VehicleAgent")
+    @agent(class: "nstream.starter.PolarityMemberAgent") {
+      "groupUriPattern": "/lat34/:group"
+    }
+  }
+  @node {
+    uri: "/lat34/north"
+    @agent(class: "nstream.adapter.common.patches.GroupPatch")
+  }
+  @node {
+    uri: "/lat34/south"
+    @agent(class: "nstream.adapter.common.patches.GroupPatch")
   }
 }
 

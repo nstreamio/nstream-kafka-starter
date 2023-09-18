@@ -49,6 +49,11 @@ Thus, the last two components mentioned are primarily for experimentation and co
    ```
    .\gradlew.bat runSim
    ```
-   
 Note that if you are working with your own broker, you only need step 3.
 Otherwise, the aforementioned order is certainly the recommended one; use caution if you modify it.
+
+## Shutdown Instructions
+
+- Java processes can be terminated by a plain `SIGINT` (ctrl + C in most shells)
+- To tear down the broker (and be okay with some persisted data), run `docker-compose down` from the `broker/` directory.
+   - To additionally completely wipe persisted data, run `docker-compose down --volumes` instead (note that restarting the broker will take longer if you do this)
