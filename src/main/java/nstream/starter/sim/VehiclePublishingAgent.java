@@ -16,7 +16,6 @@ public class VehiclePublishingAgent extends KafkaPublishingAgent<Value, Integer,
       .didSet((n, o) -> {
         if (n != null && n.isDistinct() && !n.equals(o)) {
           final ProducerRecord<Integer, String> result = createPublishable(n);
-          System.out.println(nodeUri() + ": will publish " + result);
           publishAsync(result);
         }
       });

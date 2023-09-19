@@ -2,6 +2,8 @@
 
 A baseline Nstream application that processes Kafka-hosted source data.
 
+We highly recommend following our [walkthrough](https://www.nstream.io/docs/backend/tutorial/) as you explore this codebase.
+
 ## Component Overview
 
 There are three components to this repository:
