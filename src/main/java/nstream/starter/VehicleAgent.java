@@ -16,8 +16,8 @@ import swim.structure.Value;
 public class VehicleAgent extends AbstractAgent {
 
   // Message ingestion endpoint
-  @SwimLane("addMessage")
-  CommandLane<Value> addMessage = this.<Value>commandLane()
+  @SwimLane("addEvent")
+  CommandLane<Value> addEvent = this.<Value>commandLane()
       .onCommand(v -> {
         this.latest.set(v);
         this.history.put(v.get("timestamp").longValue(), v);

@@ -16,8 +16,7 @@ provisions: {
   # ingestion
   @node {
     uri: "/kafka"
-    # @agent(class: "nstream.adapter.kafka.KafkaIngestingPatch") {
-    @agent(class: "nstream.starter.VehiclesIngestingAgent") {
+    @agent(class: "nstream.adapter.kafka.KafkaIngestingPatch") {
       kafkaIngressConf: @kafkaIngressSettings {
         consumerPropertiesProvisionName: "consumer-properties"
         topics: {"vehicles-integer-json"}
@@ -27,7 +26,7 @@ provisions: {
             "/vehicle/",
             $key # $value$id will also work here
           },
-          laneUri: "addMessage"
+          laneUri: "addEvent"
           value: $value
         }
       }
