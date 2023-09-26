@@ -1,3 +1,5 @@
+@kernel(class: 'swim.meta.MetaKernel', optional: true)
+
 provisions: {
   @provision("consumer-properties") {
     class: "nstream.adapter.common.provision.PropertiesProvision",
@@ -16,7 +18,7 @@ provisions: {
   # ingestion
   @node {
     uri: "/kafka"
-    @agent(class: "nstream.adapter.kafka.KafkaIngestingPatch") {
+    @agent(class: "nstream.starter.VehiclesIngestingAgent") {
       kafkaIngressConf: @kafkaIngressSettings {
         consumerPropertiesProvisionName: "consumer-properties"
         topics: {"vehicles-integer-json"}
@@ -52,6 +54,7 @@ provisions: {
 
 @web(port: 9001) {
   space: "starter"
+  documentRoot: "./"
   @websocket {
     serverCompressionLevel: 0# -1 = default; 0 = off; 1-9 = deflate level
     clientCompressionLevel: 0# -1 = default; 0 = off; 1-9 = deflate level

@@ -6,7 +6,7 @@ We highly recommend following our [walkthrough](https://www.nstream.io/docs/back
 
 ## Component Overview
 
-There are three components to this repository:
+There are three backend components to this repository:
 
 - An Nstream toolkit-empowered Swim server that consumes from Kafka topics and processes responses in Web Agents with minimal boilerplate (package [`nstream.starter`](/src/main/java/nstream/starter) in the Java code)
 - A standalone Kafka broker ([`broker/`](/broker) directory)
@@ -14,6 +14,8 @@ There are three components to this repository:
 
 In practice, you will develop applications against an existing broker (or its spec).
 Thus, the last two components mentioned are primarily for experimentation and come with limited warranty.
+
+There is also a minimal, general-purpose frontend component under [`src/main/resources/index.html`](/src/main/resources/index.html) that is available in a browser window under `localhost:9001` while (at minimum) the first backened component runs.
 
 ## Prerequisites
 

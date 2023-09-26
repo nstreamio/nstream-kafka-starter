@@ -1,8 +1,9 @@
 package nstream.starter;
 
+import nstream.adapter.common.content.ContentMolder;
+import nstream.adapter.kafka.KafkaAdapterUtils;
 import nstream.adapter.kafka.KafkaIngestingPatch;
-import swim.api.SwimLane;
-import swim.api.lane.CommandLane;
+import org.apache.kafka.clients.consumer.ConsumerRecords;
 
 /**
  * A skeletal {@link KafkaIngestingPatch} extension.
@@ -13,23 +14,38 @@ import swim.api.lane.CommandLane;
  * PolarityMemberAgent} and its corresponding {@code GroupPatch} defined in
  * {@code server.recon} operate -- after all, ingesting agents are still web
  * agents.
- * <p>This class is unused in a fresh clone of the repository. If you wish to
- * modify and/or use any custom logic here, ensure server.recon points to this
- * class instead of {@code KafkaIngestingPatch}.
  */
 public class VehiclesIngestingAgent extends KafkaIngestingPatch<Integer, String> {
 
-  @SwimLane("triggerReception")
-  CommandLane<String> triggerReception = this.<String>commandLane()
-      .onCommand(s -> {
-        if ("start".equals(s)) {
-          stageReception();
-        }
-      });
+  @Override
+  protected long nextBackoff(ConsumerRecords<Integer, String> records, long oldBackoff) {
+    if (!records.isEmpty()) {
+      return 0L;
+    } else if (oldBackoff < 0) {
+      return 500L;
+    } else if (oldBackoff < 4000) {
+      // Exponential backoff until 4 seconds
+      return Math.min(oldBackoff * 2, 4000L);
+    } else {
+      // Linear backoff subsequently, to a max of 8 seconds
+      return Math.min(oldBackoff + 1000L, 8000L);
+    }
+  }
 
   @Override
-  public void didStart() {
-    System.out.println(nodeUri() + ": didStart");
+  protected void stageReception() {
+    loadSettings("kafkaIngressConf");
+    this.kafkaConsumer = KafkaAdapterUtils.createConsumer(this.ingressSettings);
+    this.kafkaConsumer.subscribe(this.ingressSettings.topics());
+    this.keyMolder = ContentMolder.cast(this.ingressSettings.keyMolder());
+    this.valueMolder = ContentMolder.cast(this.ingressSettings.valueMolder());
+    this.pollTimer = scheduleWithInformedBackoff(this::pollTimer,
+        this.ingressSettings.firstFetchDelayMillis(),
+        this::nextBackoff,
+        i -> !i.isEmpty(),
+        500L,
+        () -> this.poll(this.ingressSettings.pollTimeoutMillis()),
+        this::ingest);
   }
 
 }
