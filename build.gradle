@@ -14,13 +14,13 @@ repositories {
 }
 
 dependencies {
-  implementation group: 'org.swimos', name: 'swim-api', version: version
-  implementation group: 'org.swimos', name: 'swim-server', version: version
-  implementation group: 'org.swimos', name: 'swim-client', version: version
+  implementation group: 'org.swimos', name: 'swim-api', version: "$SWIMOS_VERSION"
+  implementation group: 'org.swimos', name: 'swim-server', version: "$SWIMOS_VERSION"
+  implementation group: 'org.swimos', name: 'swim-client', version: "$SWIMOS_VERSION"
 
-  implementation group: 'io.nstream', name: 'nstream-adapter-runtime', version: version
-  implementation group: 'io.nstream', name: 'nstream-adapter-common', version: version
-  implementation group: 'io.nstream', name: 'nstream-adapter-kafka', version: version
+  implementation group: 'io.nstream', name: 'nstream-adapter-runtime', version: "$NSTREAM_VERSION"
+  implementation group: 'io.nstream', name: 'nstream-adapter-common', version: "$NSTREAM_VERSION"
+  implementation group: 'io.nstream', name: 'nstream-adapter-kafka', version: "$NSTREAM_VERSION"
 
   // Use TestNG framework, also requires calling test.useTestNG() below
   testImplementation 'org.testng:testng:7.4.0'

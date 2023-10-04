@@ -1,7 +1,9 @@
 package nstream.starter;
 
 import nstream.adapter.common.patches.MemberPatch;
+import swim.structure.Selector;
 import swim.structure.Value;
+import swim.uri.Uri;
 
 /**
  * A "low-code" {@link MemberPatch} extension with (in a fresh clone of this
@@ -14,9 +16,14 @@ import swim.structure.Value;
 public class PolarityMemberAgent extends MemberPatch {
 
   @Override
-  protected String extractGroupFromEvent(Value event) {
+  protected Value extractGroup() {
+    return Selector.identity();
+  }
+
+  @Override
+  protected Uri getGroupUriFromEvent(Value event) {
     final float indicator = event.get("latitude").floatValue();
-    return indicator < 34.f ? "south" : "north";
+    return groupUriPattern().apply(indicator < 34.f ? "south" : "north");
   }
 
 }

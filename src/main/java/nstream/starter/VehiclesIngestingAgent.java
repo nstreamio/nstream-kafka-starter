@@ -1,6 +1,7 @@
 package nstream.starter;
 
 import nstream.adapter.common.content.ContentMolder;
+import nstream.adapter.common.schedule.DeferrableException;
 import nstream.adapter.kafka.KafkaAdapterUtils;
 import nstream.adapter.kafka.KafkaIngestingPatch;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
@@ -44,8 +45,15 @@ public class VehiclesIngestingAgent extends KafkaIngestingPatch<Integer, String>
         this::nextBackoff,
         i -> !i.isEmpty(),
         500L,
-        () -> this.poll(this.ingressSettings.pollTimeoutMillis()),
-        this::ingest);
+        this::poll,
+        // FIXME: replace with this::ingest once fixed upstream
+        v -> {
+          try {
+            ingest(v);
+          } catch (DeferrableException e) {
+            didFail(e);
+          }
+        });
   }
 
 }
