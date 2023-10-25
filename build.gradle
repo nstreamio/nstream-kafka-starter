@@ -49,19 +49,3 @@ tasks.named('test') {
   // Use TestNG for unit tests.
   useTestNG()
 }
-
-task copyDockerResources(type: Copy) {
-  from tasks.jar.outputs
-  from configurations.runtimeClasspath
-  into "${buildDir}/docker/libs"
-}
-
-task copyDockerfile(type: Copy) {
-  from 'docker/Dockerfile'
-  into "${buildDir}/docker"
-}
-
-task dockerBuildImage() {
-  dependsOn copyDockerResources
-  dependsOn copyDockerfile
-}
