@@ -1,8 +1,5 @@
 package nstream.starter;
 
-import nstream.adapter.common.content.ContentMolder;
-import nstream.adapter.common.schedule.DeferrableException;
-import nstream.adapter.kafka.KafkaAdapterUtils;
 import nstream.adapter.kafka.KafkaIngestingPatch;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 
@@ -15,11 +12,24 @@ import org.apache.kafka.clients.consumer.ConsumerRecords;
  * PolarityMemberAgent} and its corresponding {@code GroupPatch} defined in
  * {@code server.recon} operate -- after all, ingesting agents are still web
  * agents.
+ * <p>A fresh clone of this repository uses the "no-code" variation; thus, this
+ * class is unused until {@code server.recon} is modified to point to it.
  */
 public class VehiclesIngestingAgent extends KafkaIngestingPatch<Integer, String> {
 
   @Override
-  protected long nextBackoff(ConsumerRecords<Integer, String> records, long oldBackoff) {
+  protected void stageReception() {
+    prepareConsumer();
+    this.pollTimer = scheduleWithInformedBackoff(this::pollTimer,
+        this.ingressSettings.firstFetchDelayMillis(),
+        this::nextBackoff,
+        i -> !i.isEmpty(),
+        500L,
+        this::poll,
+        this::ingestBatch);
+  }
+
+  private long nextBackoff(ConsumerRecords<Integer, String> records, long oldBackoff) {
     if (!records.isEmpty()) {
       return 0L;
     } else if (oldBackoff < 0) {
@@ -31,29 +41,6 @@ public class VehiclesIngestingAgent extends KafkaIngestingPatch<Integer, String>
       // Linear backoff subsequently, to a max of 8 seconds
       return Math.min(oldBackoff + 1000L, 8000L);
     }
-  }
-
-  @Override
-  protected void stageReception() {
-    loadSettings("kafkaIngressConf");
-    this.kafkaConsumer = KafkaAdapterUtils.createConsumer(this.ingressSettings);
-    this.kafkaConsumer.subscribe(this.ingressSettings.topics());
-    this.keyMolder = ContentMolder.cast(this.ingressSettings.keyMolder());
-    this.valueMolder = ContentMolder.cast(this.ingressSettings.valueMolder());
-    this.pollTimer = scheduleWithInformedBackoff(this::pollTimer,
-        this.ingressSettings.firstFetchDelayMillis(),
-        this::nextBackoff,
-        i -> !i.isEmpty(),
-        500L,
-        this::poll,
-        // FIXME: replace with this::ingest once fixed upstream
-        v -> {
-          try {
-            ingest(v);
-          } catch (DeferrableException e) {
-            didFail(e);
-          }
-        });
   }
 
 }

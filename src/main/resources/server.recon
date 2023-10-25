@@ -18,7 +18,9 @@ provisions: {
   # ingestion
   @node {
     uri: "/kafka"
-    @agent(class: "nstream.starter.VehiclesIngestingAgent") {
+    # Change to nstream.starter.VehiclesIngestingAgent for low-code,
+    #   backoff implementation
+    @agent(class: "nstream.adapter.kafka.KafkaIngestingPatch") {
       kafkaIngressConf: @kafkaIngressSettings {
         consumerPropertiesProvisionName: "consumer-properties"
         topics: {"vehicles-integer-json"}

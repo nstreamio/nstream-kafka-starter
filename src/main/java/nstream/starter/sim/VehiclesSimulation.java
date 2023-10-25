@@ -1,9 +1,13 @@
 package nstream.starter.sim;
 
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 import swim.api.space.Space;
 import swim.structure.Record;
 import swim.structure.Value;
@@ -19,14 +23,14 @@ public final class VehiclesSimulation {
 
   public static void seed(Space space) {
     // routes
-    Utils.loadResourceLines("routes.csv", s -> {
+    loadResourceLines("routes.csv", s -> {
       final String[] split = s.split(",");
       if (split.length > 1) {
         ROUTES.put(Integer.parseInt(split[0]), split[1]);
       }
     });
     // locations
-    Utils.loadResourceLines("locations.csv", s -> {
+    loadResourceLines("locations.csv", s -> {
       final String[] split = s.split(",");
       if (split.length > 1) {
         final int vehicle = Integer.parseInt(split[0]);
@@ -90,6 +94,20 @@ public final class VehiclesSimulation {
       N, NE, E, SE, S, SW, W, NW
     }
 
+  }
+
+  private static void loadResourceLines(String resourceName, Consumer<String> onLine) {
+    try (InputStream is = loadResource(resourceName);
+         BufferedReader br = new BufferedReader(new InputStreamReader(is))) {
+      br.lines().forEach(onLine);
+    } catch (Exception e) {
+      throw new RuntimeException("Failed to load lines from resource " + resourceName, e);
+    }
+  }
+
+  private static InputStream loadResource(String resourceName) {
+    return VehiclesSimulation.class.getClassLoader()
+        .getResourceAsStream(resourceName);
   }
 
 }
